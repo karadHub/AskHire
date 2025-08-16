@@ -5,6 +5,9 @@ import requests
 import re
 from pypdf import PdfReader
 from dotenv import load_dotenv
+import streamlit as st
+
+api_key = st.secrets["api"]["GEMINI_API_KEY"]
 
 # Try to import the Google Generative AI library
 try:
