@@ -1,0 +1,3 @@
+Hi, I'm Vaibhav Karad — a DevOps, Platform, Cloud, and Software Engineer with a strong foundation in cloud computing and automation. Originally from Medshi, Maharashtra, I’ve been based in Mumbai since 2018, where I’ve been building scalable systems and streamlining deployment pipelines with passion and precision.
+
+Outside of tech, I’m a full-on foodie 🍽️ especially, when it comes to Indian cuisine. Oddly enough, I can’t stand most fish or biryanis (no allergies, just taste trauma!). That said, I make proud exceptions for prawns and pomfret — proof that even my taste buds appreciate good engineering when they see it.
