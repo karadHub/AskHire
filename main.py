@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import json
 import requests
+import re
 from pypdf import PdfReader
 from dotenv import load_dotenv
 
@@ -27,6 +28,56 @@ def safe_get_secret(key, default=None):
         return st.secrets.get(key, os.getenv(key, default))
     except Exception:
         return os.getenv(key, default)
+
+
+# --- Suggestion generator helpers ---
+_STOPWORDS = {
+    "the","and","for","with","that","this","from","about","have",
+    "your","you","are","was","but","not","can","will","they","their",
+}
+
+def _extract_keywords(text, top_n=3):
+    """Naive keyword extractor: pick the most frequent long words not in stopwords."""
+    if not text:
+        return []
+    words = [w.lower() for w in re.findall(r"\b[a-zA-Z]{4,}\b", text)]
+    freq = {}
+    for w in words:
+        if w in _STOPWORDS:
+            continue
+        freq[w] = freq.get(w, 0) + 1
+    items = sorted(freq.items(), key=lambda x: (-x[1], x[0]))
+    return [w for w,_ in items[:top_n]]
+
+def generate_suggestions(user_message, response_text, owner=None, max_suggestions=3):
+    """Return a short list of suggested follow-up questions.
+
+    Strategy:
+    - Extract keywords from the user's message first; fall back to response_text.
+    - Create simple question templates using those keywords.
+    """
+    kws = _extract_keywords(user_message, top_n=max_suggestions)
+    if not kws:
+        kws = _extract_keywords(response_text, top_n=max_suggestions)
+
+    suggestions = []
+    for k in kws:
+        suggestions.append(f"Can you tell me more about {k}?")
+        if len(suggestions) >= max_suggestions:
+            break
+
+    # Add some safe generic prompts if not enough
+    generic = [
+        "How did you achieve that?",
+        "What tools or technologies were used?",
+        "Can you share a brief example or outcome?",
+    ]
+    i = 0
+    while len(suggestions) < max_suggestions and i < len(generic):
+        suggestions.append(generic[i])
+        i += 1
+
+    return suggestions
 
 # --- Pushover Notifications for Tool Calls ---
 
